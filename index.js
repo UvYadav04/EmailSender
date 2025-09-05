@@ -49,7 +49,6 @@ app.get("/new-email", (req, res) => {
 app.post("/add-email", async (req, res) => {
     const { name, email, type, position } = req.body;
     try {
-        await Outreach.create({ name, email, type, position });
         const user = await Outreach.findOne({ email })
         if (user)
             throw new Error("email already exists")
