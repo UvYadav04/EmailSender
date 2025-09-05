@@ -23,9 +23,10 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // --- MongoDB Setup ---
-mongoose.connect("mongodb+srv://dineshnirban01:pUmw96XfW1Gk2Afo@cluster0.w2w2bdg.mongodb.net/emailSender", {
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    tls: true
 });
 
 const outreachSchema = new mongoose.Schema({
@@ -98,8 +99,8 @@ cron.schedule("0 3 * * *", async () => {
 });
 
 
-sendJobEmail("uvyadav2230@gmail.com", "code brands", "Full stack software developer")
-sendStartupEmail("uvyadav2230@gmail.com", "code brands", "Full stack software developer")
+sendJobEmail("dineshyadav.connect@gmail.com", "code brands", "Full stack software developer")
+sendStartupEmail("dineshyadav.connect@gmail.com", "code brands", "Full stack software developer")
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
