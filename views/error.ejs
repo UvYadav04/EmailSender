@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Error</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffe6e6;
+            color: #a33;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .error-container {
+            text-align: center;
+            border: 1px solid #a33;
+            padding: 40px;
+            border-radius: 10px;
+            background-color: #fff0f0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error-container">
+        <h1>Oops! An Error Occurred</h1>
+        <p>
+            <%= message %>
+        </p>
+        <button onclick="window.location.href='/new-email'">Back</button>
+    </div>
+</body>
+
+</html>

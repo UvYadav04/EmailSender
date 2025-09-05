@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f6fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: #6c5ce7;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #5a4bd8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h1>Add New Contact</h1>
+        <form action="/add-email" method="POST">
+            <label>Name:</label>
+            <input type="text" name="name" required>
+
+            <label>Email:</label>
+            <input type="email" name="email" required>
+
+            <label>Type:</label>
+            <select name="type">
+                <option value="startup">Startup</option>
+                <option value="hr">HR</option>
+            </select>
+
+            <label>Position:</label>
+            <select name="positionSelect" id="positionSelect" onchange="fillPosition(this)">
+                <option value="">--Select Position--</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+                <option value="Full Stack Software Developer">Full Stack Software Developer</option>
+                <option value="MERN Stack Developer">MERN Stack Developer</option>
+            </select>
+            <input type="text" name="position" id="positionInput" placeholder="Or type manually" required>
+
+            <button type="submit">Save</button>
+        </form>
+    </div>
+
+    <script>
+        function fillPosition(select) {
+            const input = document.getElementById("positionInput");
+            input.value = select.value;
+        }
+    </script>
+</body>
+
+</html>
