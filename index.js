@@ -97,10 +97,6 @@ cron.schedule("0 3 * * *", async () => {
     console.log("🌙 3AM Cron finished.");
 });
 
-
-sendJobEmail("dineshyadav.connect@gmail.com", "code brands", "Full stack software developer")
-sendStartupEmail("dineshyadav.connect@gmail.com", "code brands", "Full stack software developer")
-
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
