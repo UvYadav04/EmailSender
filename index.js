@@ -42,7 +42,7 @@ outreachSchema.index({ email: 1 }, { unique: true });
 
 const Outreach = mongoose.model("Outreach", outreachSchema);
 
-app.get("/new-email", (req, res) => {
+app.get("/", (req, res) => {
     res.render("new-email");
 });
 
