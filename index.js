@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import dotenv from 'dotenv'
 import { sendStartupEmail } from "./utils/sendStartupEmail.js";
 import { sendJobEmail } from "./utils/sendJobEmail.js";
+import { checkRepliesForAllEmails } from "./MarkReplied/checkInbox.js";
 dotenv.config();
 
 const app = express();
@@ -38,8 +39,6 @@ const outreachSchema = new mongoose.Schema({
     lastSent: { type: Date, default: null },
     replied: { type: Boolean, default: false }
 });
-outreachSchema.index({ email: 1 }, { unique: true });
-
 const Outreach = mongoose.model("Outreach", outreachSchema);
 
 app.get("/", (req, res) => {
@@ -65,6 +64,10 @@ cron.schedule("0 3 * * *", async () => {
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     // Startups
+
+    const alldocs = await Outreach.find({})
+    await checkRepliesForAllEmails(alldocs)
+
     const startups = await Outreach.find({
         type: "startup",
         replied: false,
@@ -96,6 +99,9 @@ cron.schedule("0 3 * * *", async () => {
 
     console.log("🌙 3AM Cron finished.");
 });
+
+const alldocs = await Outreach.find({})
+await checkRepliesForAllEmails(alldocs)
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
