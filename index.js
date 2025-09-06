@@ -12,7 +12,6 @@ import { checkRepliesForAllEmails } from "./MarkReplied/checkInbox.js";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
 
 // Fix __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -100,5 +99,5 @@ app.get("/send-email", async (req, res) => {
 })
 
 app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+    console.log(`🚀 Server running at http://localhost:${process.env.PORT || 3000}`);
 });
