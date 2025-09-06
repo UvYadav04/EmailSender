@@ -1,5 +1,6 @@
 import imaps from "imap-simple";
 import dotenv from 'dotenv';
+import { Outreach } from "../index.js";
 dotenv.config();
 
 const config = {
@@ -14,7 +15,7 @@ const config = {
     }
 };
 
-export async function checkRepliesForAllEmails(emailDocs) {
+export async function checkRepliesForAllEmails() {
     try {
         const connection = await imaps.connect(config);
         await connection.openBox("INBOX");
@@ -26,26 +27,20 @@ export async function checkRepliesForAllEmails(emailDocs) {
 
         const emailRegex = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
 
-        const senders = new Set(
-            messages
-                .map(msg => {
-                    const fromHeader = msg.parts[0].body.from[0];
-                    const match = fromHeader.match(/<(.+)>/);
-                    const email = match ? match[1] : fromHeader;
-                    return email.match(emailRegex) ? email.toLowerCase() : null;
-                })
-                .filter(Boolean)
-        );
+        const senders = messages.map(msg => {
+            const fromHeader = msg.parts[0].body.from[0];
+            const match = fromHeader.match(/<(.+)>/);
+            const email = match ? match[1] : fromHeader;
+            return email.match(emailRegex) ? email.toLowerCase() : null;
+        })
+            .filter(Boolean)
 
 
-        for (const doc of emailDocs) {
-            if (senders.has(doc.email.toLowerCase())) {
-                doc.replied = true;
-                await doc.save();
-                console.log(`Marked ${doc.email} as replied`);
-            }
-        }
-
+        await Outreach.updateMany(
+            { email: { $in: senders } },
+            { $set: { replied: true } }
+        )
+        console.log("updated")
         connection.end();
     } catch (error) {
         console.log(error)

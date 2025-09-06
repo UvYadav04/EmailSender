@@ -28,7 +28,10 @@ mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     tls: true
-});
+}).then(() =>
+    console.log("connected database"))
+    .catch((e) =>
+        console.log(e));
 
 const outreachSchema = new mongoose.Schema({
     name: String,
@@ -39,7 +42,7 @@ const outreachSchema = new mongoose.Schema({
     lastSent: { type: Date, default: null },
     replied: { type: Boolean, default: false }
 });
-const Outreach = mongoose.model("Outreach", outreachSchema);
+export const Outreach = mongoose.model("Outreach", outreachSchema);
 
 app.get("/", (req, res) => {
     res.render("new-email");
@@ -58,50 +61,43 @@ app.post("/add-email", async (req, res) => {
     }
 });
 
-cron.schedule("0 3 * * *", async () => {
-    console.log("🌙 3AM Cron started...");
 
-    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-
-    // Startups
-
-    const alldocs = await Outreach.find({})
-    await checkRepliesForAllEmails(alldocs)
-
-    const startups = await Outreach.find({
-        type: "startup",
-        replied: false,
-        sent: { $lt: 4 },
-        $or: [{ lastSent: null }, { lastSent: { $lt: oneWeekAgo } }],
-    });
-
-    for (const s of startups) {
-        await sendStartupEmail(s.email, s.name, s.position);
-        s.sent += 1;
-        s.lastSent = new Date();
-        await s.save();
+app.get("/update-replied", async (req, res) => {
+    try {
+        await checkRepliesForAllEmails()
+        res.status(200).json({ success: true })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, error: error })
     }
+})
 
-    // HRs
-    const hrs = await Outreach.find({
-        type: "hr",
-        replied: false,
-        sent: { $lt: 2 },
-        $or: [{ lastSent: null }, { lastSent: { $lt: oneWeekAgo } }],
-    });
+app.get("/send-email", async (req, res) => {
+    try {
+        const latestMail = await Outreach.findOne({ sent: { $lt: 4 }, replied: false, $or: [{ lastSent: null }, { lastSent: { $lt: new Date() } }] })
+        const fourDaysLater = new Date();
+        fourDaysLater.setDate(fourDaysLater.getDate() + 4);
+        if (!latestMail)
+            return res.json({ sucess: true, message: "all are sent" })
+        if (latestMail.type === "hr") {
+            await sendJobEmail(latestMail.email, latestMail.name, latestMail.position);
+            latestMail.sent += 1;
+            latestMail.lastSent = fourDaysLater;
+            await latestMail.save();
+        }
+        else if (latestMail.type === "startup") {
+            await sendStartupEmail(latestMail.email, latestMail.name, latestMail.position);
+            latestMail.sent += 1;
+            latestMail.lastSent = fourDaysLater;
+            await latestMail.save();
+        }
 
-    for (const h of hrs) {
-        await sendJobEmail(h.email, h.name, h.position);
-        h.sent += 1;
-        h.lastSent = new Date();
-        await h.save();
+        return res.json({ success: true, message: "email sent successfully" })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, error: error })
     }
-
-    console.log("🌙 3AM Cron finished.");
-});
-
-const alldocs = await Outreach.find({})
-await checkRepliesForAllEmails(alldocs)
+})
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
