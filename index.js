@@ -98,6 +98,8 @@ app.get("/send-email", async (req, res) => {
     }
 })
 
+const PORT = process.env.PORT || 3000
+
 app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${process.env.PORT || 3000}`);
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
