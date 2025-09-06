@@ -90,6 +90,7 @@ app.get("/send-email", async (req, res) => {
             latestMail.lastSent = fourDaysLater;
             await latestMail.save();
         }
+        console.log("Email sending done")
 
         return res.json({ success: true, message: "email sent successfully" })
     } catch (error) {
