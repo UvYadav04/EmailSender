@@ -17,6 +17,8 @@ const config = {
 
 export async function checkRepliesForAllEmails() {
     try {
+        console.log(process.env.EMAIL)
+        console.log(process.env.GMAIL_PASS)
         const connection = await imaps.connect(config);
         await connection.openBox("INBOX");
 
