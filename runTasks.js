@@ -1,5 +1,6 @@
 import { sendEmails, checkReplies } from './index.js'; // ensure exported from index.js
-
+import dotenv from "dotenv"
+dotenv.config()
 async function main() {
     await checkReplies();    // Step 1
     await sendEmails();      // Step 2
