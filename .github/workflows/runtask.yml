@@ -25,8 +25,8 @@ jobs:
       # 4️⃣ Run the task runner
       - run: node runTasks.js
         env:
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_USER: ${{ secrets.EMAIL }}
+          EMAIL_PASS: ${{ secrets.GMAIL_PASS }}
           MONGO_URI: ${{ secrets.MONGO_URI }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
