@@ -61,46 +61,104 @@ app.post("/add-email", async (req, res) => {
 });
 
 
-app.get("/update-replied", async (req, res) => {
-    try {
-        await checkRepliesForAllEmails()
-        res.status(200).json({ success: true })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ success: false, error: error })
-    }
-})
 
-app.get("/send-email", async (req, res) => {
+/**
+ * Function to check replies for all emails
+ */
+export async function checkReplies() {
     try {
-        const latestMail = await Outreach.findOne({ sent: { $lt: 4 }, replied: false, $or: [{ lastSent: null }, { lastSent: { $lt: new Date() } }] })
+        console.log("✅ Starting checkReplies");
+        await checkRepliesForAllEmails();
+        console.log("✅ checkReplies completed");
+    } catch (error) {
+        console.error("❌ checkReplies error:", error);
+        throw error;
+    }
+}
+
+/**
+ * Function to send emails
+ */
+export async function sendEmails() {
+    try {
+        console.log("✅ Starting sendEmails");
+
+        const latestMail = await Outreach.findOne({
+            sent: { $lt: 4 },
+            replied: false,
+            $or: [{ lastSent: null }, { lastSent: { $lt: new Date() } }]
+        });
+
         const fourDaysLater = new Date();
         fourDaysLater.setDate(fourDaysLater.getDate() + 4);
-        if (!latestMail)
-            return res.json({ sucess: true, message: "all are sent" })
+
+        if (!latestMail) {
+            console.log("All emails already sent");
+            return;
+        }
+
         if (latestMail.type === "hr") {
             await sendJobEmail(latestMail.email, latestMail.name, latestMail.position);
-            latestMail.sent += 1;
-            latestMail.lastSent = fourDaysLater;
-            await latestMail.save();
-        }
-        else if (latestMail.type === "startup") {
+        } else if (latestMail.type === "startup") {
             await sendStartupEmail(latestMail.email, latestMail.name, latestMail.position);
-            latestMail.sent += 1;
-            latestMail.lastSent = fourDaysLater;
-            await latestMail.save();
         }
-        console.log("Email sending done")
 
-        return res.json({ success: true, message: "email sent successfully" })
+        latestMail.sent += 1;
+        latestMail.lastSent = fourDaysLater;
+        await latestMail.save();
+
+        console.log("✅ sendEmails completed");
+
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ success: false, error: error })
+        console.error("❌ sendEmails error:", error);
+        throw error;
     }
-})
+}
+
+
 
 const PORT = process.env.PORT || 3000
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
+
+
+// app.get("/update-replied", async (req, res) => {
+//     try {
+//         await checkRepliesForAllEmails()
+//         res.status(200).json({ success: true })
+//     } catch (error) {
+//         console.log(error)
+//         res.status(500).json({ success: false, error: error })
+//     }
+// })
+
+// app.get("/send-email", async (req, res) => {
+//     try {
+//         const latestMail = await Outreach.findOne({ sent: { $lt: 4 }, replied: false, $or: [{ lastSent: null }, { lastSent: { $lt: new Date() } }] })
+//         const fourDaysLater = new Date();
+//         fourDaysLater.setDate(fourDaysLater.getDate() + 4);
+//         if (!latestMail)
+//             return res.json({ sucess: true, message: "all are sent" })
+//         if (latestMail.type === "hr") {
+//             await sendJobEmail(latestMail.email, latestMail.name, latestMail.position);
+//             latestMail.sent += 1;
+//             latestMail.lastSent = fourDaysLater;
+//             await latestMail.save();
+//         }
+//         else if (latestMail.type === "startup") {
+//             await sendStartupEmail(latestMail.email, latestMail.name, latestMail.position);
+//             latestMail.sent += 1;
+//             latestMail.lastSent = fourDaysLater;
+//             await latestMail.save();
+//         }
+//         console.log("Email sending done")
+
+//         return res.json({ success: true, message: "email sent successfully" })
+//     } catch (error) {
+//         console.log(error)
+//         res.status(500).json({ success: false, error: error })
+//     }
+// })
