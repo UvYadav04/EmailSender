@@ -17,8 +17,6 @@ const config = {
 
 export async function checkRepliesForAllEmails() {
     try {
-        console.log(process.env.EMAIL)
-        console.log(process.env.GMAIL_PASS)
         const connection = await imaps.connect(config);
         await connection.openBox("INBOX");
 
@@ -42,7 +40,7 @@ export async function checkRepliesForAllEmails() {
             { email: { $in: senders } },
             { $set: { replied: true } }
         )
-        console.log("updated")
+        console.log("Updated Database")
         connection.end();
     } catch (error) {
         console.log(error)
