@@ -18,6 +18,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Middleware
+console.log(process.env.MONGO_URI)
+console.log(process.env.EMAIL)
+console.log(process.env.CLIENT_ID)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
