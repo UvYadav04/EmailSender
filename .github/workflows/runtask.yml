@@ -1,9 +1,9 @@
-name: Run Email Tasks Every 2 Minutes (Test)
+name: Run Email Tasks Every 30 Minutes 
 
-# Trigger every 2 minutes
+# Trigger every 30 minutes
 on:
   schedule:
-    - cron: "*/2 * * * *"   # every 2 minutes
+    - cron: "*/30 * * * *"   # every 30  minutes
   workflow_dispatch:         # optional manual trigger
 
 jobs:
